@@ -8,5 +8,4 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 public class UserInfoDto {
     private String username;
-    private boolean isAdmin;
 }
