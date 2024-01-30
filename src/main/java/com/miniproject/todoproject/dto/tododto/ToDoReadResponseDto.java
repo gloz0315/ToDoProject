@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class ToDoReadResponseDto {
-    private String title;
-    private String content;
-    private String username;
-    private LocalDateTime createAt;
+	private String title;
+	private String content;
+	private String username;
+	private LocalDateTime createAt;
 
 }

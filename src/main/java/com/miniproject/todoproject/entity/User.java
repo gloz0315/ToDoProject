@@ -14,21 +14,21 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "user")
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String username;
+	@Column(nullable = false, unique = true)
+	private String username;
 
-    @Column(nullable = false)
-    private String password;
+	@Column(nullable = false)
+	private String password;
 
-    @OneToMany(mappedBy = "user")
-    List<Todo> todoList = new ArrayList<>();
+	@OneToMany(mappedBy = "user")
+	List<Todo> todoList = new ArrayList<>();
 
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+	public User(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
 }

@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class ToDoRequestDto {
-    private String title;
-    private String contents;
+	private String title;
+	private String contents;
 }
