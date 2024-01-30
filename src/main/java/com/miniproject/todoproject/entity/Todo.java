@@ -1,5 +1,6 @@
 package com.miniproject.todoproject.entity;
 
+import com.miniproject.todoproject.dto.tododto.ToDoRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,5 +39,10 @@ public class Todo extends TimeStamped{
 
     public void updateComplete(boolean complete) {
         this.complete = complete;
+    }
+
+    public void update(ToDoRequestDto requestDto) {
+        this.title = requestDto.getTitle();
+        this.contents = requestDto.getContents();
     }
 }
