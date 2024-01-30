@@ -1,7 +1,6 @@
 package com.miniproject.todoproject.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,16 +15,20 @@ public class Todo extends TimeStamped{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
     @Column(name = "title", nullable = false)
     private String title;
 
-    @NotBlank
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
 
-    public Todo(String title, String contents) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+
+    public Todo(String title, String contents, User user) {
         this.title = title;
         this.contents = contents;
+        this.user = user;
     }
 }
