@@ -1,5 +1,11 @@
 package com.miniproject.todoproject.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.miniproject.todoproject.dto.tododto.ToDoReadResponseDto;
 import com.miniproject.todoproject.dto.tododto.ToDoRequestDto;
 import com.miniproject.todoproject.dto.tododto.ToDoResponseDto;
@@ -10,12 +16,6 @@ import com.miniproject.todoproject.repository.TodoRepository;
 import com.miniproject.todoproject.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class TodoService {
 		List<User> userList = userRepository.findAll();
 
 		for (User user : userList) {
-			List<Todo> todoList = todoRepository.findByUser(user);
+			List<Todo> todoList = todoRepository.findByUserOrderByCreateAtDesc(user);
 			UsersToDoResponseDto list = new UsersToDoResponseDto(user.getUsername(),
 				todoList.stream().map(ToDoResponseDto::new).toList());
 			usersToDoResponseDtoList.add(list);

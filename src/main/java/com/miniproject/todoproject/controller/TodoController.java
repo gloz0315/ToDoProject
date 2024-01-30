@@ -1,5 +1,17 @@
 package com.miniproject.todoproject.controller;
 
+import java.util.List;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.miniproject.todoproject.dto.tododto.ToDoReadResponseDto;
 import com.miniproject.todoproject.dto.tododto.ToDoRequestDto;
 import com.miniproject.todoproject.dto.tododto.ToDoResponseDto;
@@ -8,11 +20,6 @@ import com.miniproject.todoproject.security.UserDetailsImpl;
 import com.miniproject.todoproject.service.TodoService;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +35,7 @@ public class TodoController {
 		return todoService.createTodo(userDetails.getUser(), request);
 	}
 
-	// 전체 할일 목록 가져오기
+	// 전체 할일 목록 가져오기 (작성일 기준으로 내림차순)
 	@GetMapping("/todo")
 	public List<UsersToDoResponseDto> getToDoList() {
 		return todoService.getToDoList();
