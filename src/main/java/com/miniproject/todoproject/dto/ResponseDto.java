@@ -6,14 +6,13 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
-public class ResponseDto <T> {
+public class ResponseDto {
     private HttpStatus status;
     private String message;
-    private T data;
 
-    public ResponseDto(HttpStatus status, String message, T data) {
+
+    public ResponseDto(HttpStatus status, String message) {
         this.status = status;
         this.message = message;
-        this.data = data;
     }
 }

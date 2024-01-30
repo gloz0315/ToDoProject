@@ -2,15 +2,15 @@ package com.miniproject.todoproject.controller;
 
 import com.miniproject.todoproject.dto.LoginResponseDto;
 import com.miniproject.todoproject.dto.SignupRequestDto;
-import com.miniproject.todoproject.dto.UserInfoDto;
-import com.miniproject.todoproject.security.UserDetailsImpl;
 import com.miniproject.todoproject.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Slf4j
 @Controller
