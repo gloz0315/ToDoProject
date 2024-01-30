@@ -6,22 +6,29 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.miniproject.todoproject.dto.commentdto.UserCommentDto;
 import com.miniproject.todoproject.dto.tododto.ToDoReadResponseDto;
 import com.miniproject.todoproject.dto.tododto.ToDoRequestDto;
 import com.miniproject.todoproject.dto.tododto.ToDoResponseDto;
+import com.miniproject.todoproject.dto.tododto.TodoCommentResponseDto;
 import com.miniproject.todoproject.dto.usersdto.UsersToDoResponseDto;
+import com.miniproject.todoproject.entity.Comment;
 import com.miniproject.todoproject.entity.Todo;
 import com.miniproject.todoproject.entity.User;
+import com.miniproject.todoproject.repository.CommentRepository;
 import com.miniproject.todoproject.repository.TodoRepository;
 import com.miniproject.todoproject.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TodoService {
 	private final TodoRepository todoRepository;
 	private final UserRepository userRepository;
+	private final CommentRepository commentRepository;
 
 	public List<UsersToDoResponseDto> getToDoList() {
 		List<UsersToDoResponseDto> usersToDoResponseDtoList = new ArrayList<>();
@@ -44,20 +51,30 @@ public class TodoService {
 		Todo todo = new Todo(request.getTitle(), request.getContents(), user);
 		Todo savedTodo = todoRepository.save(todo);
 
+		log.info("해당 유저 정보: " + todo.getUser() + ", 유저 이름 : " + todo.getUser().getUsername());
+
 		return new ToDoResponseDto(savedTodo);
 	}
 
-	public ToDoReadResponseDto readToDo(Long id) {
+	public TodoCommentResponseDto readToDo(Long id) {
 		Todo todo = todoRepository.findById(id).orElseThrow(
 			() -> new IllegalArgumentException("해당 카드가 존재하지 않습니다.")
 		);
 
-		return ToDoReadResponseDto.builder()
+		List<Comment> findCommentList = commentRepository.findByTodo(todo);
+
+		List<UserCommentDto> responseDtoList = findCommentList.stream()
+			.map(comment -> new UserCommentDto(comment.getContents(), comment.getUser()))
+			.toList();
+
+		ToDoReadResponseDto responseDto = ToDoReadResponseDto.builder()
 			.title(todo.getTitle())
 			.content(todo.getTitle())
 			.createAt(todo.getCreateAt())
 			.username(todo.getUser().getUsername())
 			.build();
+
+		return new TodoCommentResponseDto(responseDto, responseDtoList);
 	}
 
 	@Transactional
