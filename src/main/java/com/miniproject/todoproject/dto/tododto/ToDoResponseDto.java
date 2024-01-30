@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-public class ToDoResponse {
+public class ToDoResponseDto {
     private String title;
     private String contents;
     private LocalDateTime createAt;
     private boolean complete;
 
-    public ToDoResponse(Todo todo) {
+    public ToDoResponseDto(Todo todo) {
         this.title = todo.getTitle();
         this.contents = todo.getContents();
         this.createAt = todo.getCreateAt();
