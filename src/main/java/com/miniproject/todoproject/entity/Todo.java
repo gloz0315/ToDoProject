@@ -21,6 +21,9 @@ public class Todo extends TimeStamped{
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
 
+    @Column(name = "complete", nullable = false)
+    private boolean complete;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -30,5 +33,10 @@ public class Todo extends TimeStamped{
         this.title = title;
         this.contents = contents;
         this.user = user;
+        this.complete = false;
+    }
+
+    public void updateComplete(boolean complete) {
+        this.complete = complete;
     }
 }

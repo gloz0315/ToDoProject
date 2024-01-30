@@ -1,16 +1,16 @@
 package com.miniproject.todoproject.service;
 
-import com.miniproject.todoproject.dto.ResponseDto;
-import com.miniproject.todoproject.dto.ToDoRequest;
-import com.miniproject.todoproject.dto.ToDoResponse;
+import com.miniproject.todoproject.dto.tododto.ToDoRequest;
+import com.miniproject.todoproject.dto.tododto.ToDoResponse;
+import com.miniproject.todoproject.dto.UsersToDoResponseDto;
 import com.miniproject.todoproject.entity.Todo;
 import com.miniproject.todoproject.entity.User;
 import com.miniproject.todoproject.repository.TodoRepository;
 import com.miniproject.todoproject.repository.UserRepository;
-import com.miniproject.todoproject.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,10 +18,18 @@ import java.util.List;
 public class TodoService {
     private final TodoRepository todoRepository;
     private final UserRepository userRepository;
-    public List<ToDoResponse> getToDoList(User user) {
-        List<Todo> todoList = todoRepository.findByUser(user);
+    public List<UsersToDoResponseDto> getToDoList() {
+        List<UsersToDoResponseDto> usersToDoResponseDtoList = new ArrayList<>();
+        List<User> userList = userRepository.findAll();
 
-        return todoList.stream().map(ToDoResponse::new).toList();
+        for(User user : userList) {
+            List<Todo> todoList = todoRepository.findByUser(user);
+            UsersToDoResponseDto list = new UsersToDoResponseDto(user.getUsername(),
+                    todoList.stream().map(ToDoResponse::new).toList());
+            usersToDoResponseDtoList.add(list);
+        }
+
+        return usersToDoResponseDtoList;
     }
 
     public ToDoResponse createTodo(User userInfo, ToDoRequest request) {
