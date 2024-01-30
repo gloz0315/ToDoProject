@@ -1,5 +1,11 @@
 package com.miniproject.todoproject.service;
 
+import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.miniproject.todoproject.dto.logindto.LoginRequestDto;
 import com.miniproject.todoproject.dto.logindto.LoginResponseDto;
 import com.miniproject.todoproject.dto.signupdto.SignupRequestDto;
@@ -12,11 +18,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final JwtUtil jwtUtil;
+	private final PasswordEncoder passwordEncoder;
 
 	public LoginResponseDto login(HttpServletResponse response, LoginRequestDto request) {
 		String username = request.getUsername();
@@ -61,7 +63,7 @@ public class UserService {
 			return new LoginResponseDto(HttpStatus.BAD_REQUEST, "이름이 중복되셨습니다.");
 		}
 
-		User user = new User(username, password);
+		User user = new User(username, passwordEncoder.encode(password));
 		userRepository.save(user);
 
 		return new LoginResponseDto(HttpStatus.OK, "회원 가입을 성공하셨습니다.");
@@ -81,7 +83,7 @@ public class UserService {
 
 	private boolean comparePassword(String repositoryPassword, String password) {
 		try {
-			if (!repositoryPassword.equals(password)) {
+			if (!passwordEncoder.matches(password, repositoryPassword)) {
 				throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 			}
 		} catch (IllegalArgumentException e) {
