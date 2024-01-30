@@ -1,7 +1,8 @@
 package com.miniproject.todoproject.service;
 
-import com.miniproject.todoproject.dto.LoginResponseDto;
-import com.miniproject.todoproject.dto.SignupRequestDto;
+import com.miniproject.todoproject.dto.logindto.LoginRequestDto;
+import com.miniproject.todoproject.dto.logindto.LoginResponseDto;
+import com.miniproject.todoproject.dto.signupdto.SignupRequestDto;
 import com.miniproject.todoproject.entity.User;
 import com.miniproject.todoproject.invalidate.Invalidate;
 import com.miniproject.todoproject.jwtUtil.JwtUtil;
@@ -22,7 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
-    public LoginResponseDto login(HttpServletResponse response, SignupRequestDto request) {
+    public LoginResponseDto login(HttpServletResponse response, LoginRequestDto request) {
         String username = request.getUsername();
         String password = request.getPassword();
 
