@@ -1,4 +1,4 @@
-package com.miniproject.todoproject.dto;
+package com.miniproject.todoproject.dto.signupdto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

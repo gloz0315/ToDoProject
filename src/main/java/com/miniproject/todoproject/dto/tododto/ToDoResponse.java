@@ -1,4 +1,4 @@
-package com.miniproject.todoproject.dto;
+package com.miniproject.todoproject.dto.tododto;
 
 import com.miniproject.todoproject.entity.Todo;
 import lombok.Getter;
@@ -12,12 +12,12 @@ public class ToDoResponse {
     private String title;
     private String contents;
     private LocalDateTime createAt;
-    private LocalDateTime modifiedAt;
+    private boolean complete;
 
     public ToDoResponse(Todo todo) {
         this.title = todo.getTitle();
         this.contents = todo.getContents();
         this.createAt = todo.getCreateAt();
-        this.modifiedAt = todo.getModifiedAt();
+        this.complete = todo.isComplete();
     }
 }
