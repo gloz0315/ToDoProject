@@ -98,7 +98,7 @@ public class TodoService {
 			throw new IllegalArgumentException("카드를 만든 당사자가 아닙니다.");
 		}
 
-		todo.setComplete(true);
+		todo.updateComplete(true);
 
 		return new ToDoResponseDto(todo);
 	}
