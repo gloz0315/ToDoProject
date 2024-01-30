@@ -1,5 +1,8 @@
 package com.miniproject.todoproject.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.miniproject.todoproject.dto.tododto.ToDoRequestDto;
 
 import jakarta.persistence.Column;
@@ -10,12 +13,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "todo")
 public class Todo extends TimeStamped {
@@ -35,6 +41,9 @@ public class Todo extends TimeStamped {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
+
+	@OneToMany(mappedBy = "todo")
+	private List<Comment> commentList = new ArrayList<>();
 
 	public Todo(String title, String contents, User user) {
 		this.title = title;

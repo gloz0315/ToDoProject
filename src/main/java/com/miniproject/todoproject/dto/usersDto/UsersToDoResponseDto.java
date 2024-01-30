@@ -1,12 +1,12 @@
-package com.miniproject.todoproject.dto.usersDto;
+package com.miniproject.todoproject.dto.usersdto;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.miniproject.todoproject.dto.tododto.ToDoResponseDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor

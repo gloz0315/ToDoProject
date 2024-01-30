@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.miniproject.todoproject.dto.tododto.ToDoReadResponseDto;
 import com.miniproject.todoproject.dto.tododto.ToDoRequestDto;
 import com.miniproject.todoproject.dto.tododto.ToDoResponseDto;
-import com.miniproject.todoproject.dto.usersDto.UsersToDoResponseDto;
+import com.miniproject.todoproject.dto.usersdto.UsersToDoResponseDto;
 import com.miniproject.todoproject.security.UserDetailsImpl;
 import com.miniproject.todoproject.service.TodoService;
 
@@ -41,7 +41,7 @@ public class TodoController {
 		return todoService.getToDoList();
 	}
 
-	// 할일 카드 조회 기능
+	// 할일 카드 조회 기능 (댓글 포함해서 읽기?)
 	@GetMapping("/todo/{id}")
 	public ToDoReadResponseDto readToDo(@PathVariable("id") Long id) {
 		return todoService.readToDo(id);

@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.miniproject.todoproject.dto.tododto.ToDoReadResponseDto;
 import com.miniproject.todoproject.dto.tododto.ToDoRequestDto;
 import com.miniproject.todoproject.dto.tododto.ToDoResponseDto;
-import com.miniproject.todoproject.dto.usersDto.UsersToDoResponseDto;
+import com.miniproject.todoproject.dto.usersdto.UsersToDoResponseDto;
 import com.miniproject.todoproject.entity.Todo;
 import com.miniproject.todoproject.entity.User;
 import com.miniproject.todoproject.repository.TodoRepository;
