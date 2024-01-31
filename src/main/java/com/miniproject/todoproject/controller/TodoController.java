@@ -22,8 +22,11 @@ import com.miniproject.todoproject.dto.usersdto.UsersToDoResponseDto;
 import com.miniproject.todoproject.security.UserDetailsImpl;
 import com.miniproject.todoproject.service.TodoService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Todo 컨트롤러", description = "할 일 카드에 관한 API 입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -32,6 +35,7 @@ public class TodoController {
 	private final TodoService todoService;
 
 	// 할 일 카드 작성 기능
+	@Operation(summary = "할 일 카드 작성", description = "카드를 생성할 수 있습니다.")
 	@PostMapping("/todo")
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> createToDo(@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestBody ToDoRequestDto request) {
@@ -39,18 +43,21 @@ public class TodoController {
 	}
 
 	// 전체 할일 목록 가져오기 (작성일 기준으로 내림차순)
+	@Operation(summary = "할 일 카드 전체 목록 조회", description = "할 일 카드 전체를 작성일 기준으로 내림차순 및 완료에 따라 정렬됩니다.")
 	@GetMapping("/todo")
 	public ResponseEntity<ResponseDto<List<UsersToDoResponseDto>>> getToDoList() {
 		return todoService.getToDoList();
 	}
 
-	// 할일 카드 조회 기능 (댓글 포함해서 읽기?) -> 그전까지는 문제가없음
+	// 할일 카드 조회 기능
+	@Operation(summary = "할 일 카드 조회", description = "해당 카드의 정보를 조회합니다.")
 	@GetMapping("/todo/{id}")
 	public ResponseEntity<ResponseDto<TodoCommentResponseDto>> readToDo(@PathVariable("id") Long id) {
 		return todoService.readToDo(id);
 	}
 
 	// 할일 카드 수정 (당사자만 가능)
+	@Operation(summary = "카드 내용 수정", description = "해당 카드의 정보를 수정할 수 있습니다.")
 	@PutMapping("/todo/{id}")
 	public ResponseEntity<ResponseDto<ToDoReadResponseDto>> updateToDo(@PathVariable("id") Long id,
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -59,6 +66,7 @@ public class TodoController {
 	}
 
 	// 할일 카드 완료 기능 (당사자만 가능)
+	@Operation(summary = "할 일 카드 완료", description = "당사자가 카드를 완료할 수 있습니다.")
 	@PatchMapping("/todo/{id}")
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> completeTodo(@PathVariable("id") Long id,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
