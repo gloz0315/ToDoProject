@@ -51,10 +51,7 @@ public class TodoService {
 
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> createTodo(User userInfo, ToDoRequestDto request) {
 		try {
-			User user = userRepository.findByUsername(userInfo.getUsername()).orElseThrow(
-				() -> new IllegalArgumentException(Message.NOT_EXIST_USER)
-			);
-
+			User user = findUser(userInfo.getUsername());
 			Todo todo = new Todo(request.getTitle(), request.getContents(), user);
 			Todo savedTodo = todoRepository.save(todo);
 
@@ -71,9 +68,7 @@ public class TodoService {
 
 	public ResponseEntity<ResponseDto<TodoCommentResponseDto>> readToDo(Long id) {
 		try {
-			Todo todo = todoRepository.findById(id).orElseThrow(
-				() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
-			);
+			Todo todo = findTodo(id);
 
 			List<Comment> findCommentList = commentRepository.findByTodo(todo);
 
@@ -103,19 +98,12 @@ public class TodoService {
 	@Transactional
 	public ResponseEntity<ResponseDto<ToDoReadResponseDto>> updateTodo(Long id, User userInfo, ToDoRequestDto request) {
 		try {
-			Todo todo = todoRepository.findById(id).orElseThrow(
-				() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
-			);
-
-			User user = userRepository.findByUsername(userInfo.getUsername()).orElseThrow(
-				() -> new IllegalArgumentException(Message.NOT_EXIST_USER)
-			);
-
-			if (!user.equals(todo.getUser())) {
-				throw new IllegalArgumentException(Message.NOT_WRITER);
-			}
+			Todo todo = findTodo(id);
+			User user = findUser(userInfo.getUsername());
+			checkCompareUser(todo.getUser(), user);
 
 			todo.update(request);
+
 			return new ResponseEntity<>(
 				new ResponseDto<>(HttpStatus.OK, Message.UPDATE_CARD, ToDoReadResponseDto.builder()
 					.title(todo.getTitle())
@@ -133,17 +121,9 @@ public class TodoService {
 	@Transactional
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> completeTodo(Long id, User userInfo) {
 		try {
-			Todo todo = todoRepository.findById(id).orElseThrow(
-				() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
-			);
-
-			User user = userRepository.findByUsername(userInfo.getUsername()).orElseThrow(
-				() -> new IllegalArgumentException(Message.NOT_EXIST_USER)
-			);
-
-			if (!user.equals(todo.getUser())) {
-				throw new IllegalArgumentException(Message.NOT_WRITER);
-			}
+			Todo todo = findTodo(id);
+			User user = findUser(userInfo.getUsername());
+			checkCompareUser(todo.getUser(), user);
 
 			todo.updateComplete(true);
 
@@ -155,5 +135,23 @@ public class TodoService {
 			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null)
 				, HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	private void checkCompareUser(User todoUser, User user) {
+		if (!user.equals(todoUser)) {
+			throw new IllegalArgumentException(Message.NOT_WRITER);
+		}
+	}
+
+	private Todo findTodo(Long id) {
+		return todoRepository.findById(id).orElseThrow(
+			() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
+		);
+	}
+
+	private User findUser(String username) {
+		return userRepository.findByUsername(username).orElseThrow(
+			() -> new IllegalArgumentException(Message.NOT_EXIST_USER)
+		);
 	}
 }

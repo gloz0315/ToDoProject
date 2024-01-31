@@ -30,13 +30,8 @@ public class CommentService {
 	public ResponseEntity<ResponseDto<CommentResponseDto>> createComment(Long id, User userInfo,
 		CommentRequestDto requestDto) {
 		try {
-			Todo todo = todoRepository.findById(id).orElseThrow(
-				() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
-			);
-
-			User user = userRepository.findByUsername(userInfo.getUsername()).orElseThrow(
-				() -> new IllegalArgumentException(Message.NOT_EXIST_USER)
-			);
+			Todo todo = findTodo(id);
+			User user = findUser(userInfo.getUsername());
 
 			Comment comment = new Comment(requestDto.getContents(), user, todo);
 			commentRepository.save(comment);
@@ -58,17 +53,9 @@ public class CommentService {
 	public ResponseEntity<ResponseDto<CommentResponseDto>> updateComment(Long id, Long commentId, User userInfo,
 		CommentRequestDto requestDto) {
 		try {
-			todoRepository.findById(id).orElseThrow(
-				() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
-			);
-
-			Comment comment = commentRepository.findById(commentId).orElseThrow(
-				() -> new IllegalArgumentException(Message.NOT_EXIST_COMMENT)
-			);
-
-			if (!comment.getUser().getId().equals(userInfo.getId())) {
-				throw new IllegalArgumentException(Message.NOT_WRITER);
-			}
+			existCard(id);
+			Comment comment = findComment(commentId);
+			compareCommentUser(userInfo.getId(), comment.getUser().getId());
 
 			comment.update(requestDto.getContents());
 			return new ResponseEntity<>(
@@ -84,17 +71,10 @@ public class CommentService {
 
 	public ResponseEntity<ResponseDto<CommentResponseDto>> deleteComment(Long id, Long commentId, User userInfo) {
 		try {
-			todoRepository.findById(id).orElseThrow(
-				() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
-			);
+			existCard(id);
+			Comment comment = findComment(commentId);
+			compareCommentUser(userInfo.getId(), comment.getUser().getId());
 
-			Comment comment = commentRepository.findById(commentId).orElseThrow(
-				() -> new IllegalArgumentException(Message.NOT_EXIST_COMMENT)
-			);
-
-			if (!comment.getUser().getId().equals(userInfo.getId())) {
-				throw new IllegalArgumentException(Message.NOT_WRITER);
-			}
 			String contents = comment.getContents();
 			commentRepository.delete(comment);
 
@@ -108,4 +88,33 @@ public class CommentService {
 		}
 	}
 
+	private void existCard(Long id) {
+		todoRepository.findById(id).orElseThrow(
+			() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
+		);
+	}
+
+	private Todo findTodo(Long id) {
+		return todoRepository.findById(id).orElseThrow(
+			() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
+		);
+	}
+
+	private User findUser(String username) {
+		return userRepository.findByUsername(username).orElseThrow(
+			() -> new IllegalArgumentException(Message.NOT_EXIST_USER)
+		);
+	}
+
+	private Comment findComment(Long id) {
+		return commentRepository.findById(id).orElseThrow(
+			() -> new IllegalArgumentException(Message.NOT_EXIST_COMMENT)
+		);
+	}
+
+	private void compareCommentUser(Long userId, Long commentUserId) {
+		if (!userId.equals(commentUserId)) {
+			throw new IllegalArgumentException(Message.NOT_WRITER);
+		}
+	}
 }
