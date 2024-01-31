@@ -1,6 +1,7 @@
 package com.miniproject.todoproject.controller;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,5 +37,13 @@ public class CommentController {
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestBody CommentRequestDto requestDto) {
 		return commentService.updateComment(id, commentId, userDetails.getUser(), requestDto);
+	}
+
+	// 댓글 삭제 기능
+	@DeleteMapping("/{id}/{commentId}")
+	public CommentResponseDto deleteComment(@PathVariable("id") Long id,
+		@PathVariable("commentId") Long commentId,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return commentService.deleteComment(id, commentId, userDetails.getUser());
 	}
 }

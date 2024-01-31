@@ -54,4 +54,22 @@ public class CommentService {
 
 		return new CommentResponseDto(comment.getContents());
 	}
+
+	public CommentResponseDto deleteComment(Long id, Long commentId, User userInfo) {
+		todoRepository.findById(id).orElseThrow(
+			() -> new IllegalArgumentException("해당 카드가 존재하지 않습니다.")
+		);
+
+		Comment comment = commentRepository.findById(commentId).orElseThrow(
+			() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다.")
+		);
+
+		if (!comment.getUser().getId().equals(userInfo.getId())) {
+			throw new IllegalArgumentException("해당 작성자가 아닙니다.");
+		}
+
+		commentRepository.delete(comment);
+
+		return new CommentResponseDto("댓글을 삭제하였습니다.");
+	}
 }
