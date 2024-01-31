@@ -38,6 +38,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
 			if (!jwtUtil.validateToken(tokenValue)) {
 				log.error("토큰이 맞지 않습니다!");
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
 
@@ -57,14 +58,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 	// 인증 처리
 	public void setAuthentication(String username) {
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
-		Authentication authentication = createAutentication(username);
+		Authentication authentication = createAuthentication(username);
 		context.setAuthentication(authentication);
 
 		SecurityContextHolder.setContext(context);
 	}
 
 	// 인증 객체 생성
-	private Authentication createAutentication(String username) {
+	private Authentication createAuthentication(String username) {
 		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 		return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 	}

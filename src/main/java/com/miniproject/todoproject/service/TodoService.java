@@ -3,9 +3,12 @@ package com.miniproject.todoproject.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.miniproject.todoproject.dto.ResponseDto;
 import com.miniproject.todoproject.dto.commentdto.UserCommentDto;
 import com.miniproject.todoproject.dto.tododto.ToDoReadResponseDto;
 import com.miniproject.todoproject.dto.tododto.ToDoRequestDto;
@@ -15,6 +18,7 @@ import com.miniproject.todoproject.dto.usersdto.UsersToDoResponseDto;
 import com.miniproject.todoproject.entity.Comment;
 import com.miniproject.todoproject.entity.Todo;
 import com.miniproject.todoproject.entity.User;
+import com.miniproject.todoproject.message.Message;
 import com.miniproject.todoproject.repository.CommentRepository;
 import com.miniproject.todoproject.repository.TodoRepository;
 import com.miniproject.todoproject.repository.UserRepository;
@@ -30,7 +34,7 @@ public class TodoService {
 	private final UserRepository userRepository;
 	private final CommentRepository commentRepository;
 
-	public List<UsersToDoResponseDto> getToDoList() {
+	public ResponseEntity<ResponseDto<List<UsersToDoResponseDto>>> getToDoList() {
 		List<UsersToDoResponseDto> usersToDoResponseDtoList = new ArrayList<>();
 		List<User> userList = userRepository.findAll();
 
@@ -41,82 +45,115 @@ public class TodoService {
 			usersToDoResponseDtoList.add(list);
 		}
 
-		return usersToDoResponseDtoList;
+		return new ResponseEntity<>(new ResponseDto<>(HttpStatus.OK, Message.READ_CARDS, usersToDoResponseDtoList),
+			HttpStatus.OK);
 	}
 
-	public ToDoResponseDto createTodo(User userInfo, ToDoRequestDto request) {
-		User user = userRepository.findByUsername(userInfo.getUsername()).orElseThrow(
-			() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-		);
-		Todo todo = new Todo(request.getTitle(), request.getContents(), user);
-		Todo savedTodo = todoRepository.save(todo);
+	public ResponseEntity<ResponseDto<ToDoResponseDto>> createTodo(User userInfo, ToDoRequestDto request) {
+		try {
+			User user = userRepository.findByUsername(userInfo.getUsername()).orElseThrow(
+				() -> new IllegalArgumentException(Message.NOT_EXIST_USER)
+			);
 
-		log.info("해당 유저 정보: " + todo.getUser() + ", 유저 이름 : " + todo.getUser().getUsername());
+			Todo todo = new Todo(request.getTitle(), request.getContents(), user);
+			Todo savedTodo = todoRepository.save(todo);
 
-		return new ToDoResponseDto(savedTodo);
+			return new ResponseEntity<>(
+				new ResponseDto<>(HttpStatus.CREATED, Message.CREATE_CARD, new ToDoResponseDto(savedTodo))
+				, HttpStatus.CREATED);
+		} catch (IllegalArgumentException e) {
+			log.error(e.getMessage());
+
+			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null)
+				, HttpStatus.BAD_REQUEST);
+		}
 	}
 
-	public TodoCommentResponseDto readToDo(Long id) {
-		Todo todo = todoRepository.findById(id).orElseThrow(
-			() -> new IllegalArgumentException("해당 카드가 존재하지 않습니다.")
-		);
+	public ResponseEntity<ResponseDto<TodoCommentResponseDto>> readToDo(Long id) {
+		try {
+			Todo todo = todoRepository.findById(id).orElseThrow(
+				() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
+			);
 
-		List<Comment> findCommentList = commentRepository.findByTodo(todo);
+			List<Comment> findCommentList = commentRepository.findByTodo(todo);
 
-		List<UserCommentDto> responseDtoList = findCommentList.stream()
-			.map(comment -> new UserCommentDto(comment.getContents(), comment.getUser().getUsername()))
-			.toList();
+			List<UserCommentDto> responseDtoList = findCommentList.stream()
+				.map(comment -> new UserCommentDto(comment.getContents(), comment.getUser().getUsername()))
+				.toList();
 
-		ToDoReadResponseDto responseDto = ToDoReadResponseDto.builder()
-			.title(todo.getTitle())
-			.content(todo.getTitle())
-			.createAt(todo.getCreateAt())
-			.username(todo.getUser().getUsername())
-			.build();
+			ToDoReadResponseDto responseDto = ToDoReadResponseDto.builder()
+				.title(todo.getTitle())
+				.content(todo.getTitle())
+				.createAt(todo.getCreateAt())
+				.username(todo.getUser().getUsername())
+				.build();
 
-		return new TodoCommentResponseDto(responseDto, responseDtoList);
+			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.OK, Message.READ_CARD,
+				new TodoCommentResponseDto(responseDto, responseDtoList)), HttpStatus.OK);
+
+		} catch (IllegalArgumentException e) {
+			log.error(e.getMessage());
+
+			return new ResponseEntity<>(
+				new ResponseDto<>(HttpStatus.BAD_REQUEST, Message.NOT_EXIST_CARD, null),
+				HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@Transactional
-	public ToDoReadResponseDto updateTodo(Long id, User userInfo, ToDoRequestDto request) {
-		Todo todo = todoRepository.findById(id).orElseThrow(
-			() -> new IllegalArgumentException("해당 카드가 존재하지 않습니다.")
-		);
+	public ResponseEntity<ResponseDto<ToDoReadResponseDto>> updateTodo(Long id, User userInfo, ToDoRequestDto request) {
+		try {
+			Todo todo = todoRepository.findById(id).orElseThrow(
+				() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
+			);
 
-		User user = userRepository.findByUsername(userInfo.getUsername()).orElseThrow(
-			() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-		);
+			User user = userRepository.findByUsername(userInfo.getUsername()).orElseThrow(
+				() -> new IllegalArgumentException(Message.NOT_EXIST_USER)
+			);
 
-		if (!user.equals(todo.getUser())) {
-			throw new IllegalArgumentException("카드를 만든 당사자가 아닙니다.");
+			if (!user.equals(todo.getUser())) {
+				throw new IllegalArgumentException(Message.NOT_WRITER);
+			}
+
+			todo.update(request);
+			return new ResponseEntity<>(
+				new ResponseDto<>(HttpStatus.OK, Message.UPDATE_CARD, ToDoReadResponseDto.builder()
+					.title(todo.getTitle())
+					.content(todo.getContents())
+					.createAt(todo.getCreateAt())
+					.username(todo.getUser().getUsername())
+					.build()), HttpStatus.OK);
+		} catch (IllegalArgumentException e) {
+			log.error(e.getMessage());
+			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null)
+				, HttpStatus.BAD_REQUEST);
 		}
-
-		todo.update(request);
-
-		return ToDoReadResponseDto.builder()
-			.title(todo.getTitle())
-			.content(todo.getContents())
-			.createAt(todo.getCreateAt())
-			.username(todo.getUser().getUsername())
-			.build();
 	}
 
 	@Transactional
-	public ToDoResponseDto completeTodo(Long id, User userInfo) {
-		Todo todo = todoRepository.findById(id).orElseThrow(
-			() -> new IllegalArgumentException("해당 카드가 존재하지 않습니다.")
-		);
+	public ResponseEntity<ResponseDto<ToDoResponseDto>> completeTodo(Long id, User userInfo) {
+		try {
+			Todo todo = todoRepository.findById(id).orElseThrow(
+				() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
+			);
 
-		User user = userRepository.findByUsername(userInfo.getUsername()).orElseThrow(
-			() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-		);
+			User user = userRepository.findByUsername(userInfo.getUsername()).orElseThrow(
+				() -> new IllegalArgumentException(Message.NOT_EXIST_USER)
+			);
 
-		if (!user.equals(todo.getUser())) {
-			throw new IllegalArgumentException("카드를 만든 당사자가 아닙니다.");
+			if (!user.equals(todo.getUser())) {
+				throw new IllegalArgumentException(Message.NOT_WRITER);
+			}
+
+			todo.updateComplete(true);
+
+			return new ResponseEntity<>(
+				new ResponseDto<>(HttpStatus.OK, Message.COMPLETE_CARD, new ToDoResponseDto(todo))
+				, HttpStatus.OK);
+		} catch (IllegalArgumentException e) {
+			log.error(e.getMessage());
+			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null)
+				, HttpStatus.BAD_REQUEST);
 		}
-
-		todo.updateComplete(true);
-
-		return new ToDoResponseDto(todo);
 	}
 }
