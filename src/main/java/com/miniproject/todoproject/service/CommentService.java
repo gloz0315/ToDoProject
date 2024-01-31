@@ -1,6 +1,7 @@
 package com.miniproject.todoproject.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.miniproject.todoproject.dto.commentdto.CommentRequestDto;
 import com.miniproject.todoproject.dto.commentdto.CommentResponseDto;
@@ -31,6 +32,25 @@ public class CommentService {
 
 		Comment comment = new Comment(requestDto.getContents(), user, todo);
 		commentRepository.save(comment);
+
+		return new CommentResponseDto(comment.getContents());
+	}
+
+	@Transactional
+	public CommentResponseDto updateComment(Long id, Long commentId, User userInfo, CommentRequestDto requestDto) {
+		todoRepository.findById(id).orElseThrow(
+			() -> new IllegalArgumentException("해당 카드가 존재하지 않습니다.")
+		);
+
+		Comment comment = commentRepository.findById(commentId).orElseThrow(
+			() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다.")
+		);
+
+		if (!comment.getUser().getId().equals(userInfo.getId())) {
+			throw new IllegalArgumentException("해당 작성자가 아닙니다.");
+		}
+
+		comment.update(requestDto.getContents());
 
 		return new CommentResponseDto(comment.getContents());
 	}

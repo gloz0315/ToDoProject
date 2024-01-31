@@ -64,7 +64,7 @@ public class TodoService {
 		List<Comment> findCommentList = commentRepository.findByTodo(todo);
 
 		List<UserCommentDto> responseDtoList = findCommentList.stream()
-			.map(comment -> new UserCommentDto(comment.getContents(), comment.getUser()))
+			.map(comment -> new UserCommentDto(comment.getContents(), comment.getUser().getUsername()))
 			.toList();
 
 		ToDoReadResponseDto responseDto = ToDoReadResponseDto.builder()

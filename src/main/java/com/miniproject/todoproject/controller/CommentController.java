@@ -3,6 +3,7 @@ package com.miniproject.todoproject.controller;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,5 +27,14 @@ public class CommentController {
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestBody CommentRequestDto requestDto) {
 		return commentService.createComment(id, userDetails.getUser(), requestDto);
+	}
+
+	// 댓글 기능 수정
+	@PutMapping("/{id}/{commentId}")
+	public CommentResponseDto updateComment(@PathVariable("id") Long id,
+		@PathVariable("commentId") Long commentId,
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@RequestBody CommentRequestDto requestDto) {
+		return commentService.updateComment(id, commentId, userDetails.getUser(), requestDto);
 	}
 }
