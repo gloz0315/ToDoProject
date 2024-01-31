@@ -35,7 +35,7 @@ public class TodoService {
 		List<User> userList = userRepository.findAll();
 
 		for (User user : userList) {
-			List<Todo> todoList = todoRepository.findByUserOrderByCreateAtDesc(user);
+			List<Todo> todoList = todoRepository.findByUserOrderByCompleteAscCreateAtDesc(user);
 			UsersToDoResponseDto list = new UsersToDoResponseDto(user.getUsername(),
 				todoList.stream().map(ToDoResponseDto::new).toList());
 			usersToDoResponseDtoList.add(list);
