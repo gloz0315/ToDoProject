@@ -6,10 +6,6 @@
 
 ---
 
-## Use Case Diagram
-
----
-
 ## ERD
 
 ![ERD](https://github.com/gloz0315/scheduleProject/assets/80665963/44d3fa3b-ec07-49b9-819b-8aa285d675f7)
