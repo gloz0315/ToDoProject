@@ -36,7 +36,7 @@ public class UserService {
 		Optional<User> user = userRepository.findByUsername(username);
 
 		if (!existUsername(user)) {
-			return new ResponseEntity<>(new LoginResponseDto(HttpStatus.BAD_REQUEST, Message.NOT_EXIST_USERNAME)
+			return new ResponseEntity<>(new LoginResponseDto(HttpStatus.NOT_FOUND, Message.NOT_EXIST_USERNAME)
 				, HttpStatus.BAD_REQUEST);
 		}
 
