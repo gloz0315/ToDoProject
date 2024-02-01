@@ -137,8 +137,25 @@ public class TodoService {
 		}
 	}
 
+	@Transactional
+	public ResponseEntity<ResponseDto<ToDoResponseDto>> deleteTodo(Long id, User user) {
+		try {
+			Todo todo = findTodo(id);
+			checkCompareUser(todo.getUser(), user);
+
+			todo.getCommentList().clear();
+			todoRepository.delete(todo);
+			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.OK, Message.DELETE_CARD, null),
+				HttpStatus.OK);
+		} catch (IllegalArgumentException e) {
+			log.error(e.getMessage());
+			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null)
+				, HttpStatus.BAD_REQUEST);
+		}
+	}
+
 	private void checkCompareUser(User todoUser, User user) {
-		if (!user.equals(todoUser)) {
+		if (!user.getUsername().equals(todoUser.getUsername())) {
 			throw new IllegalArgumentException(Message.NOT_WRITER);
 		}
 	}

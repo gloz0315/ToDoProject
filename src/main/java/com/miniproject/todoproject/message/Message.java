@@ -31,5 +31,6 @@ public class Message {
 	public static final String READ_CARD = "카드 정보를 조회합니다.";
 	public static final String UPDATE_CARD = "카드를 수정합니다.";
 	public static final String COMPLETE_CARD = "카드를 완료하였습니다.";
+	public static final String DELETE_CARD = "카드를 삭제하였습니다.";
 
 }

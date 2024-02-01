@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,7 +43,7 @@ public class TodoController {
 	@ApiResponse(responseCode = "201", description = "할 일 카드를 생성하셨습니다.",
 		content = @Content(schema = @Schema(implementation = ToDoResponseDto.class)))
 	@PostMapping("/todo")
-	public ResponseEntity<ResponseDto<ToDoResponseDto>> createToDo(@AuthenticationPrincipal UserDetailsImpl userDetails,
+	public ResponseEntity<ResponseDto<ToDoResponseDto>> createTodo(@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestBody ToDoRequestDto request) {
 		return todoService.createTodo(userDetails.getUser(), request);
 	}
@@ -52,7 +53,7 @@ public class TodoController {
 	@ApiResponse(responseCode = "201", description = "카드 목록들을 조회합니다.",
 		content = @Content(schema = @Schema(implementation = UsersToDoResponseDto.class)))
 	@GetMapping("/todo")
-	public ResponseEntity<ResponseDto<List<UsersToDoResponseDto>>> getToDoList() {
+	public ResponseEntity<ResponseDto<List<UsersToDoResponseDto>>> getTodoList() {
 		return todoService.getToDoList();
 	}
 
@@ -61,7 +62,7 @@ public class TodoController {
 	@ApiResponse(responseCode = "200", description = "카드 정보를 조회합니다.",
 		content = @Content(schema = @Schema(implementation = TodoCommentResponseDto.class)))
 	@GetMapping("/todo/{id}")
-	public ResponseEntity<ResponseDto<TodoCommentResponseDto>> readToDo(@PathVariable("id") Long id) {
+	public ResponseEntity<ResponseDto<TodoCommentResponseDto>> readTodo(@PathVariable("id") Long id) {
 		return todoService.readToDo(id);
 	}
 
@@ -70,7 +71,7 @@ public class TodoController {
 	@ApiResponse(responseCode = "200", description = "카드를 수정합니다.",
 		content = @Content(schema = @Schema(implementation = ResponseDto.class)))
 	@PutMapping("/todo/{id}")
-	public ResponseEntity<ResponseDto<ToDoReadResponseDto>> updateToDo(@PathVariable("id") Long id,
+	public ResponseEntity<ResponseDto<ToDoReadResponseDto>> updateTodo(@PathVariable("id") Long id,
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestBody ToDoRequestDto request) {
 		return todoService.updateTodo(id, userDetails.getUser(), request);
@@ -84,5 +85,11 @@ public class TodoController {
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> completeTodo(@PathVariable("id") Long id,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return todoService.completeTodo(id, userDetails.getUser());
+	}
+
+	@DeleteMapping("/todo/{id}")
+	public ResponseEntity<ResponseDto<ToDoResponseDto>> deleteTodo(@PathVariable("id") Long id,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return todoService.deleteTodo(id, userDetails.getUser());
 	}
 }
