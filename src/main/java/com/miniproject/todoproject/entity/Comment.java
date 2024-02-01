@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -28,14 +29,14 @@ public class Comment {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
+	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "todo_id", nullable = false)
 	private Todo todo;
 
-	public Comment(String contents, User user, Todo todo) {
+	public Comment(String contents, User user) {
 		this.contents = contents;
 		this.user = user;
-		this.todo = todo;
 	}
 
 	public void update(String comment) {

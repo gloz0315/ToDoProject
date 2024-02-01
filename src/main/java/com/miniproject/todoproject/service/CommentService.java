@@ -33,12 +33,13 @@ public class CommentService {
 			Todo todo = findTodo(id);
 			User user = findUser(userInfo.getUsername());
 
-			Comment comment = new Comment(requestDto.getContents(), user, todo);
+			Comment comment = new Comment(requestDto.getContents(), user);
+			todo.addCommentList(comment);
 			commentRepository.save(comment);
 
 			return new ResponseEntity<>(
 				new ResponseDto<>(HttpStatus.CREATED, Message.CREATE_COMMENT,
-					new CommentResponseDto(comment.getContents()))
+					new CommentResponseDto(requestDto.getContents()))
 				, HttpStatus.CREATED);
 
 		} catch (IllegalArgumentException e) {
