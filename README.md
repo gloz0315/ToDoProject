@@ -2,13 +2,11 @@
 
 ---
 
-## API 명세서
-
----
-
 ## ERD
 
 ![ERD](https://github.com/gloz0315/scheduleProject/assets/80665963/44d3fa3b-ec07-49b9-819b-8aa285d675f7)
+
+(API명세서는 맨 아래에 있습니다.)
 
 ---
 
@@ -96,3 +94,11 @@
 - [x] 토큰을 검사한 후, 유효한 토큰이면서 해당 사용자가 작성한 댓글만 삭제 가능
 - [x] 선택한 댓글의 DB 저장 유무를 확인하기
 - [x] 선택한 댓글이 있다면 댓글 삭제하고 Client 로 성공했다는 메시지, 상태코드 반환하기
+
+---
+
+## API 명세서
+
+![api 명세서](https://github.com/gloz0315/ToDoProject/assets/80665963/0283a594-5fe2-4cb3-bfab-631a0d81f9a4)
+
+
