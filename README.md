@@ -99,7 +99,6 @@
 
 ## API 명세서
 
-![API 명세서](https://github.com/gloz0315/ToDoProject/assets/80665963/a6af3f6f-945d-4674-ba77-4820f5d8413c)
-
-
+![사진](https://github.com/gloz0315/ToDoProject/assets/80665963/64c1853d-65fe-40cc-978e-80a40d6f485a)
+![API 명세서](https://github.com/gloz0315/ToDoProject/assets/80665963/b244a43c-1b8c-4e79-9f0e-c43d5d944b37)
 
