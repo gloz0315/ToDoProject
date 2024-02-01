@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,18 +31,8 @@ public class UserController {
 
 	// 회원 가입하기
 	@Operation(summary = "회원 가입", description = "회원의 이름과 비밀번호를 통해 가입할 수 있습니다.")
-	@ApiResponses(
-		{
-			@ApiResponse(responseCode = "200", description = "회원가입에 성공하셨습니다.",
-				content = @Content(schema = @Schema(implementation = LoginResponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "이름을 잘못 작성하셨습니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class))),
-			@ApiResponse(responseCode = "400", description = "비밀번호를 잘못 작성하셨습니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class))),
-			@ApiResponse(responseCode = "400", description = "이름이 중복되셨습니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class)))
-		}
-	)
+	@ApiResponse(responseCode = "200", description = "회원가입에 성공하셨습니다.",
+		content = @Content(schema = @Schema(implementation = LoginResponseDto.class)))
 	@PostMapping("/signup")
 	@ResponseBody
 	public ResponseEntity<LoginResponseDto> signup(@RequestBody SignupRequestDto request) {
@@ -52,16 +41,8 @@ public class UserController {
 
 	// 로그인 하기
 	@Operation(summary = "로그인", description = "회원의 이름과 비밀번호를 통해 로그인할 수 있습니다.")
-	@ApiResponses(
-		{
-			@ApiResponse(responseCode = "200", description = "로그인에 성공하셨습니다.",
-				content = @Content(schema = @Schema(implementation = LoginResponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class))),
-			@ApiResponse(responseCode = "404", description = "유저 이름이 존재하지 않습니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class)))
-		}
-	)
+	@ApiResponse(responseCode = "200", description = "로그인에 성공하셨습니다.",
+		content = @Content(schema = @Schema(implementation = LoginResponseDto.class)))
 	@PostMapping("/login")
 	@ResponseBody
 	public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto request, HttpServletResponse response) {

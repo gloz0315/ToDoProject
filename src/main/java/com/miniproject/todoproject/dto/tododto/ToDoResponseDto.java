@@ -17,7 +17,7 @@ public class ToDoResponseDto {
 	private String contents;
 	@Schema(description = "생성일")
 	private LocalDateTime createAt;
-	@Schema(description = "할 일 카드 완료 여부")
+	@Schema(description = "할 일 카드 완료 여부", example = "false")
 	private boolean complete;
 
 	public ToDoResponseDto(Todo todo) {

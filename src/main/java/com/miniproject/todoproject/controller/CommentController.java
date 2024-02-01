@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,16 +30,8 @@ public class CommentController {
 
 	// 댓글 생성 기능
 	@Operation(summary = "댓글 생성", description = "댓글을 작성할 수 있습니다.")
-	@ApiResponses(
-		{
-			@ApiResponse(responseCode = "201", description = "댓글을 작성했습니다.",
-				content = @Content(schema = @Schema(implementation = ResponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "해당 카드가 존재하지 않습니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class))),
-			@ApiResponse(responseCode = "400", description = "해당 유저가 존재하지 않습니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class)))
-		}
-	)
+	@ApiResponse(responseCode = "201", description = "댓글을 작성했습니다.",
+		content = @Content(schema = @Schema(implementation = ResponseDto.class)))
 	@PostMapping("/{id}")
 	public ResponseEntity<ResponseDto<CommentResponseDto>> createComment(@PathVariable("id") Long id,
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -50,18 +41,8 @@ public class CommentController {
 
 	// 댓글 기능 수정
 	@Operation(summary = "댓글 수정", description = "당사자가 댓글을 수정할 수 있습니다.")
-	@ApiResponses(
-		{
-			@ApiResponse(responseCode = "200", description = "댓글을 수정하셨습니다.",
-				content = @Content(schema = @Schema(implementation = ResponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "해당 카드가 존재하지 않습니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class))),
-			@ApiResponse(responseCode = "400", description = "해당 댓글이 존재하지 않습니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class))),
-			@ApiResponse(responseCode = "400", description = "해당 작성자가 아닙니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class)))
-		}
-	)
+	@ApiResponse(responseCode = "200", description = "댓글을 수정하셨습니다.",
+		content = @Content(schema = @Schema(implementation = ResponseDto.class)))
 	@PutMapping("/{id}/{commentId}")
 	public ResponseEntity<ResponseDto<CommentResponseDto>> updateComment(@PathVariable("id") Long id,
 		@PathVariable("commentId") Long commentId,
@@ -72,18 +53,8 @@ public class CommentController {
 
 	// 댓글 삭제 기능
 	@Operation(summary = "댓글 삭제", description = "당사자가 댓글을 삭제할 수 있습니다.")
-	@ApiResponses(
-		{
-			@ApiResponse(responseCode = "200", description = "댓글을 삭제하셨습니다.",
-				content = @Content(schema = @Schema(implementation = ResponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "해당 카드가 존재하지 않습니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class))),
-			@ApiResponse(responseCode = "400", description = "해당 댓글이 존재하지 않습니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class))),
-			@ApiResponse(responseCode = "400", description = "해당 작성자가 아닙니다.",
-				content = @Content(schema = @Schema(implementation = IllegalArgumentException.class)))
-		}
-	)
+	@ApiResponse(responseCode = "200", description = "댓글을 삭제하셨습니다.",
+		content = @Content(schema = @Schema(implementation = ResponseDto.class)))
 	@DeleteMapping("/{id}/{commentId}")
 	public ResponseEntity<ResponseDto<CommentResponseDto>> deleteComment(@PathVariable("id") Long id,
 		@PathVariable("commentId") Long commentId,
