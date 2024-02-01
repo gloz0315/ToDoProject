@@ -20,8 +20,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Comment 컨트롤러", description = "댓글에 관한 API 입니다.")
 @RestController
 @RequestMapping("/api/todo")
 @RequiredArgsConstructor
