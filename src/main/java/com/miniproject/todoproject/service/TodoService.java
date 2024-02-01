@@ -142,9 +142,8 @@ public class TodoService {
 		try {
 			Todo todo = findTodo(id);
 			checkCompareUser(todo.getUser(), user);
-
-			todo.getCommentList().clear();
 			todoRepository.delete(todo);
+
 			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.OK, Message.DELETE_CARD, null),
 				HttpStatus.OK);
 		} catch (IllegalArgumentException e) {
