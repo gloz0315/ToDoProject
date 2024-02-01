@@ -87,6 +87,10 @@ public class TodoController {
 		return todoService.completeTodo(id, userDetails.getUser());
 	}
 
+	// 할일 카드 삭제 기능 (당사자만 가능, 댓글까지 같이 삭제)
+	@Operation(summary = "할 일 카드 삭제", description = "당사자가 카드를 삭제할 수 있습니다.")
+	@ApiResponse(responseCode = "200", description = "카드를 삭제하였습니다.",
+		content = @Content(schema = @Schema(implementation = ResponseDto.class)))
 	@DeleteMapping("/todo/{id}")
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> deleteTodo(@PathVariable("id") Long id,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
