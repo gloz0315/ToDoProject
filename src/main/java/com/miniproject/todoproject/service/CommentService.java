@@ -29,64 +29,43 @@ public class CommentService {
 
 	public ResponseEntity<ResponseDto<CommentResponseDto>> createComment(Long id, User userInfo,
 		CommentRequestDto requestDto) {
-		try {
-			Todo todo = findTodo(id);
-			User user = findUser(userInfo.getUsername());
+		Todo todo = findTodo(id);
+		User user = findUser(userInfo.getUsername());
 
-			Comment comment = new Comment(requestDto.getContents(), user);
-			todo.addCommentList(comment);
-			commentRepository.save(comment);
+		Comment comment = new Comment(requestDto.getContents(), user);
+		todo.addCommentList(comment);
+		commentRepository.save(comment);
 
-			return new ResponseEntity<>(
-				new ResponseDto<>(HttpStatus.CREATED, Message.CREATE_COMMENT,
-					new CommentResponseDto(requestDto.getContents()))
-				, HttpStatus.CREATED);
-
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null)
-				, HttpStatus.BAD_REQUEST);
-		}
+		return new ResponseEntity<>(
+			new ResponseDto<>(HttpStatus.CREATED, Message.CREATE_COMMENT,
+				new CommentResponseDto(requestDto.getContents()))
+			, HttpStatus.CREATED);
 
 	}
 
 	@Transactional
 	public ResponseEntity<ResponseDto<CommentResponseDto>> updateComment(Long id, Long commentId, User userInfo,
 		CommentRequestDto requestDto) {
-		try {
-			existCard(id);
-			Comment comment = findComment(commentId);
-			compareCommentUser(userInfo.getId(), comment.getUser().getId());
+		existCard(id);
+		Comment comment = findComment(commentId);
+		compareCommentUser(userInfo.getId(), comment.getUser().getId());
 
-			comment.update(requestDto.getContents());
-			return new ResponseEntity<>(
-				new ResponseDto<>(HttpStatus.OK, Message.UPDATE_COMMENT, new CommentResponseDto(comment.getContents()))
-				, HttpStatus.OK
-			);
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null)
-				, HttpStatus.BAD_REQUEST);
-		}
+		comment.update(requestDto.getContents());
+		return ResponseEntity
+			.ok(new ResponseDto<>(HttpStatus.OK, Message.UPDATE_COMMENT,
+				new CommentResponseDto(comment.getContents())));
 	}
 
 	public ResponseEntity<ResponseDto<CommentResponseDto>> deleteComment(Long id, Long commentId, User userInfo) {
-		try {
-			existCard(id);
-			Comment comment = findComment(commentId);
-			compareCommentUser(userInfo.getId(), comment.getUser().getId());
+		existCard(id);
+		Comment comment = findComment(commentId);
+		compareCommentUser(userInfo.getId(), comment.getUser().getId());
 
-			String contents = comment.getContents();
-			commentRepository.delete(comment);
+		String contents = comment.getContents();
+		commentRepository.delete(comment);
 
-			return new ResponseEntity<>(
-				new ResponseDto<>(HttpStatus.OK, Message.DELETE_COMMENT, new CommentResponseDto(contents)),
-				HttpStatus.OK);
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null)
-				, HttpStatus.BAD_REQUEST);
-		}
+		return ResponseEntity
+			.ok(new ResponseDto<>(HttpStatus.OK, Message.DELETE_COMMENT, new CommentResponseDto(contents)));
 	}
 
 	private void existCard(Long id) {

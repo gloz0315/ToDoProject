@@ -44,113 +44,74 @@ public class TodoService {
 				todoList.stream().map(ToDoResponseDto::new).toList());
 			usersToDoResponseDtoList.add(list);
 		}
-
-		return new ResponseEntity<>(new ResponseDto<>(HttpStatus.OK, Message.READ_CARDS, usersToDoResponseDtoList),
-			HttpStatus.OK);
+		return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK, Message.READ_CARDS, usersToDoResponseDtoList));
 	}
 
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> createTodo(User userInfo, ToDoRequestDto request) {
-		try {
-			User user = findUser(userInfo.getUsername());
-			Todo todo = new Todo(request.getTitle(), request.getContents(), user);
-			Todo savedTodo = todoRepository.save(todo);
+		User user = findUser(userInfo.getUsername());
+		Todo todo = new Todo(request.getTitle(), request.getContents(), user);
+		Todo savedTodo = todoRepository.save(todo);
 
-			return new ResponseEntity<>(
-				new ResponseDto<>(HttpStatus.CREATED, Message.CREATE_CARD, new ToDoResponseDto(savedTodo))
-				, HttpStatus.CREATED);
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-
-			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null)
-				, HttpStatus.BAD_REQUEST);
-		}
+		return new ResponseEntity<>(
+			new ResponseDto<>(HttpStatus.CREATED, Message.CREATE_CARD, new ToDoResponseDto(savedTodo))
+			, HttpStatus.CREATED);
 	}
 
 	public ResponseEntity<ResponseDto<TodoCommentResponseDto>> readToDo(Long id) {
-		try {
-			Todo todo = findTodo(id);
+		Todo todo = findTodo(id);
 
-			List<Comment> findCommentList = commentRepository.findByTodo(todo);
+		List<Comment> findCommentList = commentRepository.findByTodo(todo);
 
-			List<UserCommentDto> responseDtoList = findCommentList.stream()
-				.map(comment -> new UserCommentDto(comment.getContents(), comment.getUser().getUsername()))
-				.toList();
+		List<UserCommentDto> responseDtoList = findCommentList.stream()
+			.map(comment -> new UserCommentDto(comment.getContents(), comment.getUser().getUsername()))
+			.toList();
 
-			ToDoReadResponseDto responseDto = ToDoReadResponseDto.builder()
-				.title(todo.getTitle())
-				.content(todo.getTitle())
-				.createAt(todo.getCreateAt())
-				.username(todo.getUser().getUsername())
-				.build();
+		ToDoReadResponseDto responseDto = ToDoReadResponseDto.builder()
+			.title(todo.getTitle())
+			.content(todo.getTitle())
+			.createAt(todo.getCreateAt())
+			.username(todo.getUser().getUsername())
+			.build();
 
-			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.OK, Message.READ_CARD,
-				new TodoCommentResponseDto(responseDto, responseDtoList)), HttpStatus.OK);
-
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-
-			return new ResponseEntity<>(
-				new ResponseDto<>(HttpStatus.BAD_REQUEST, Message.NOT_EXIST_CARD, null),
-				HttpStatus.BAD_REQUEST);
-		}
+		return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK, Message.READ_CARD,
+			new TodoCommentResponseDto(responseDto, responseDtoList)));
 	}
 
 	@Transactional
 	public ResponseEntity<ResponseDto<ToDoReadResponseDto>> updateTodo(Long id, User userInfo, ToDoRequestDto request) {
-		try {
-			Todo todo = findTodo(id);
-			User user = findUser(userInfo.getUsername());
-			checkCompareUser(todo.getUser(), user);
+		Todo todo = findTodo(id);
+		User user = findUser(userInfo.getUsername());
+		checkCompareUser(todo.getUser(), user);
 
-			todo.update(request);
+		todo.update(request);
 
-			return new ResponseEntity<>(
-				new ResponseDto<>(HttpStatus.OK, Message.UPDATE_CARD, ToDoReadResponseDto.builder()
-					.title(todo.getTitle())
-					.content(todo.getContents())
-					.createAt(todo.getCreateAt())
-					.username(todo.getUser().getUsername())
-					.build()), HttpStatus.OK);
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null)
-				, HttpStatus.BAD_REQUEST);
-		}
+		return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK, Message.UPDATE_CARD, ToDoReadResponseDto.builder()
+			.title(todo.getTitle())
+			.content(todo.getContents())
+			.createAt(todo.getCreateAt())
+			.username(todo.getUser().getUsername())
+			.build()));
 	}
 
 	@Transactional
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> completeTodo(Long id, User userInfo) {
-		try {
-			Todo todo = findTodo(id);
-			User user = findUser(userInfo.getUsername());
-			checkCompareUser(todo.getUser(), user);
+		Todo todo = findTodo(id);
+		User user = findUser(userInfo.getUsername());
+		checkCompareUser(todo.getUser(), user);
 
-			todo.updateComplete(true);
+		todo.updateComplete(true);
 
-			return new ResponseEntity<>(
-				new ResponseDto<>(HttpStatus.OK, Message.COMPLETE_CARD, new ToDoResponseDto(todo))
-				, HttpStatus.OK);
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null)
-				, HttpStatus.BAD_REQUEST);
-		}
+		return ResponseEntity.ok(
+			new ResponseDto<>(HttpStatus.OK, Message.COMPLETE_CARD, new ToDoResponseDto(todo)));
 	}
 
 	@Transactional
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> deleteTodo(Long id, User user) {
-		try {
-			Todo todo = findTodo(id);
-			checkCompareUser(todo.getUser(), user);
-			todoRepository.delete(todo);
+		Todo todo = findTodo(id);
+		checkCompareUser(todo.getUser(), user);
+		todoRepository.delete(todo);
 
-			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.OK, Message.DELETE_CARD, null),
-				HttpStatus.OK);
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-			return new ResponseEntity<>(new ResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null)
-				, HttpStatus.BAD_REQUEST);
-		}
+		return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK, Message.DELETE_CARD, null));
 	}
 
 	private void checkCompareUser(User todoUser, User user) {

@@ -35,17 +35,9 @@ public class UserService {
 
 		Optional<User> user = userRepository.findByUsername(username);
 
-		if (!existUsername(user)) {
-			return new ResponseEntity<>(new LoginResponseDto(HttpStatus.NOT_FOUND, Message.NOT_EXIST_USERNAME)
-				, HttpStatus.BAD_REQUEST);
-		}
+		existUsername(user);
+		comparePassword(user.get().getPassword(), password);
 
-		if (!comparePassword(user.get().getPassword(), password)) {
-			return new ResponseEntity<>(new LoginResponseDto(HttpStatus.BAD_REQUEST, Message.NOT_MATCH_PASSWORD)
-				, HttpStatus.BAD_REQUEST);
-		}
-
-		// 헤더에 Jwt 토큰을 통한 정보 반환
 		response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.get().getUsername()));
 
 		return new ResponseEntity<>(new LoginResponseDto(HttpStatus.OK, Message.SUCCESS_LOGIN), HttpStatus.OK);
@@ -55,86 +47,44 @@ public class UserService {
 		String username = requestDto.getUsername();
 		String password = requestDto.getPassword();
 
-		if (!invalidateUsername(username)) {
-			return new ResponseEntity<>(new LoginResponseDto(HttpStatus.BAD_REQUEST, Message.ERROR_USERNAME),
-				HttpStatus.BAD_REQUEST);
-		}
-
-		if (!invalidatePassword(password)) {
-			return new ResponseEntity<>(new LoginResponseDto(HttpStatus.BAD_REQUEST, Message.ERROR_PASSWORD),
-				HttpStatus.BAD_REQUEST);
-		}
-
-		if (duplicateSName(username)) {
-			return new ResponseEntity<>(new LoginResponseDto(HttpStatus.BAD_REQUEST, Message.DUPLICATE_USERNAME),
-				HttpStatus.BAD_REQUEST);
-		}
+		invalidateUsername(username);
+		invalidatePassword(password);
+		duplicateSName(username);
 
 		User user = new User(username, passwordEncoder.encode(password));
 		userRepository.save(user);
 
-		return new ResponseEntity<>(new LoginResponseDto(HttpStatus.OK, Message.SUCCESS_SIGNUP),
-			HttpStatus.OK);
+		return ResponseEntity.ok(new LoginResponseDto(HttpStatus.OK, Message.SUCCESS_SIGNUP));
 	}
 
-	private boolean existUsername(Optional<User> user) {
-		try {
-			if (user.isEmpty()) {
-				throw new IllegalArgumentException(Message.NOT_EXIST_USER);
-			}
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-			return false;
+	private void existUsername(Optional<User> user) {
+		if (user.isEmpty()) {
+			throw new IllegalArgumentException(Message.NOT_EXIST_USER);
 		}
-		return true;
 	}
 
-	private boolean comparePassword(String repositoryPassword, String password) {
-		try {
-			if (!passwordEncoder.matches(password, repositoryPassword)) {
-				throw new IllegalArgumentException(Message.NOT_MATCH_PASSWORD);
-			}
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-			return false;
+	private void comparePassword(String repositoryPassword, String password) {
+		if (!passwordEncoder.matches(password, repositoryPassword)) {
+			throw new IllegalArgumentException(Message.NOT_MATCH_PASSWORD);
 		}
-		return true;
 	}
 
-	private boolean invalidateUsername(String username) {
-		try {
-			if (!Invalidate.userLengthValidate(username)) {
-				throw new IllegalArgumentException(Message.INVALIDATE_USERNAME);
-			}
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-			return false;
+	private void invalidateUsername(String username) {
+		if (!Invalidate.userLengthValidate(username)) {
+			throw new IllegalArgumentException(Message.INVALIDATE_USERNAME);
 		}
-		return true;
 	}
 
-	private boolean invalidatePassword(String password) {
-		try {
-			if (!Invalidate.passwordLengthValidate(password)) {
-				throw new IllegalArgumentException(Message.INVALIDATE_PASSWORD);
-			}
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-			return false;
+	private void invalidatePassword(String password) {
+		if (!Invalidate.passwordLengthValidate(password)) {
+			throw new IllegalArgumentException(Message.INVALIDATE_PASSWORD);
 		}
-		return true;
 	}
 
-	private boolean duplicateSName(String username) {
-		try {
-			if (Invalidate.duplicateUserName(userRepository.findByUsername(username))) {
-				throw new IllegalArgumentException(Message.DUPLICATE_USERNAME);
-			}
-		} catch (IllegalArgumentException e) {
-			log.error(e.getMessage());
-			return true;
+	private void duplicateSName(String username) {
+		if (Invalidate.duplicateUserName(userRepository.findByUsername(username))) {
+			throw new IllegalArgumentException(Message.DUPLICATE_USERNAME);
 		}
-		return false;
 	}
 
 }
