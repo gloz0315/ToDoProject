@@ -5,10 +5,7 @@ public class Message {
 	public static final String NOT_EXIST_CARD = "해당 카드가 존재하지 않습니다.";
 	public static final String NOT_EXIST_COMMENT = "해당 댓글이 존재하지 않습니다.";
 	public static final String NOT_EXIST_USER = "해당 유저가 존재하지 않습니다.";
-	public static final String NOT_EXIST_USERNAME = "유저 이름이 존재하지 않습니다.";
 	public static final String NOT_WRITER = "해당 작성자가 아닙니다.";
-	public static final String ERROR_PASSWORD = "비밀번호를 잘못 작성하셨습니다.";
-	public static final String ERROR_USERNAME = "이름을 잘못 작성하셨습니다.";
 	public static final String DUPLICATE_USERNAME = "이름이 중복되셨습니다.";
 	public static final String NOT_MATCH_PASSWORD = "비밀번호가 일치하지 않습니다.";
 
