@@ -11,10 +11,9 @@ import com.miniproject.todoproject.dto.commentdto.CommentResponseDto;
 import com.miniproject.todoproject.entity.Comment;
 import com.miniproject.todoproject.entity.Todo;
 import com.miniproject.todoproject.entity.User;
+import com.miniproject.todoproject.invalidate.Verifier;
 import com.miniproject.todoproject.message.Message;
 import com.miniproject.todoproject.repository.CommentRepository;
-import com.miniproject.todoproject.repository.TodoRepository;
-import com.miniproject.todoproject.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,14 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class CommentService {
-	private final TodoRepository todoRepository;
-	private final UserRepository userRepository;
 	private final CommentRepository commentRepository;
+	private final Verifier verifier;
 
 	public ResponseEntity<ResponseDto<CommentResponseDto>> createComment(Long id, User userInfo,
 		CommentRequestDto requestDto) {
-		Todo todo = findTodo(id);
-		User user = findUser(userInfo.getUsername());
+		Todo todo = verifier.findTodo(id);
+		User user = verifier.findUser(userInfo.getUsername());
 
 		Comment comment = new Comment(requestDto.getContents(), user);
 		todo.addCommentList(comment);
@@ -46,9 +44,9 @@ public class CommentService {
 	@Transactional
 	public ResponseEntity<ResponseDto<CommentResponseDto>> updateComment(Long id, Long commentId, User userInfo,
 		CommentRequestDto requestDto) {
-		existCard(id);
-		Comment comment = findComment(commentId);
-		compareCommentUser(userInfo.getId(), comment.getUser().getId());
+		verifier.existCard(id);
+		Comment comment = verifier.findComment(commentId);
+		verifier.compareCommentUser(userInfo.getId(), comment.getUser().getId());
 
 		comment.update(requestDto.getContents());
 		return ResponseEntity
@@ -57,44 +55,14 @@ public class CommentService {
 	}
 
 	public ResponseEntity<ResponseDto<CommentResponseDto>> deleteComment(Long id, Long commentId, User userInfo) {
-		existCard(id);
-		Comment comment = findComment(commentId);
-		compareCommentUser(userInfo.getId(), comment.getUser().getId());
+		verifier.existCard(id);
+		Comment comment = verifier.findComment(commentId);
+		verifier.compareCommentUser(userInfo.getId(), comment.getUser().getId());
 
 		String contents = comment.getContents();
 		commentRepository.delete(comment);
 
 		return ResponseEntity
 			.ok(new ResponseDto<>(HttpStatus.OK, Message.DELETE_COMMENT, new CommentResponseDto(contents)));
-	}
-
-	private void existCard(Long id) {
-		todoRepository.findById(id).orElseThrow(
-			() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
-		);
-	}
-
-	private Todo findTodo(Long id) {
-		return todoRepository.findById(id).orElseThrow(
-			() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
-		);
-	}
-
-	private User findUser(String username) {
-		return userRepository.findByUsername(username).orElseThrow(
-			() -> new IllegalArgumentException(Message.NOT_EXIST_USER)
-		);
-	}
-
-	private Comment findComment(Long id) {
-		return commentRepository.findById(id).orElseThrow(
-			() -> new IllegalArgumentException(Message.NOT_EXIST_COMMENT)
-		);
-	}
-
-	private void compareCommentUser(Long userId, Long commentUserId) {
-		if (!userId.equals(commentUserId)) {
-			throw new IllegalArgumentException(Message.NOT_WRITER);
-		}
 	}
 }

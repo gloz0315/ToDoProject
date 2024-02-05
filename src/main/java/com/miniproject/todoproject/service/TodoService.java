@@ -18,10 +18,9 @@ import com.miniproject.todoproject.dto.usersdto.UsersToDoResponseDto;
 import com.miniproject.todoproject.entity.Comment;
 import com.miniproject.todoproject.entity.Todo;
 import com.miniproject.todoproject.entity.User;
+import com.miniproject.todoproject.invalidate.Verifier;
 import com.miniproject.todoproject.message.Message;
-import com.miniproject.todoproject.repository.CommentRepository;
 import com.miniproject.todoproject.repository.TodoRepository;
-import com.miniproject.todoproject.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +30,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class TodoService {
 	private final TodoRepository todoRepository;
-	private final UserRepository userRepository;
-	private final CommentRepository commentRepository;
+	private final Verifier verifier;
 
 	public ResponseEntity<ResponseDto<List<UsersToDoResponseDto>>> getToDoList() {
 		List<UsersToDoResponseDto> usersToDoResponseDtoList = new ArrayList<>();
-		List<User> userList = userRepository.findAll();
+		List<User> userList = verifier.findAllUsers();
 
 		for (User user : userList) {
 			List<Todo> todoList = todoRepository.findByUserOrderByCompleteAscCreateAtDesc(user);
@@ -48,7 +46,7 @@ public class TodoService {
 	}
 
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> createTodo(User userInfo, ToDoRequestDto request) {
-		User user = findUser(userInfo.getUsername());
+		User user = verifier.findUser(userInfo.getUsername());
 		Todo todo = new Todo(request.getTitle(), request.getContents(), user);
 		Todo savedTodo = todoRepository.save(todo);
 
@@ -58,9 +56,8 @@ public class TodoService {
 	}
 
 	public ResponseEntity<ResponseDto<TodoCommentResponseDto>> readToDo(Long id) {
-		Todo todo = findTodo(id);
-
-		List<Comment> findCommentList = commentRepository.findByTodo(todo);
+		Todo todo = verifier.findTodo(id);
+		List<Comment> findCommentList = verifier.findAllComments(todo);
 
 		List<UserCommentDto> responseDtoList = findCommentList.stream()
 			.map(comment -> new UserCommentDto(comment.getContents(), comment.getUser().getUsername()))
@@ -79,9 +76,9 @@ public class TodoService {
 
 	@Transactional
 	public ResponseEntity<ResponseDto<ToDoReadResponseDto>> updateTodo(Long id, User userInfo, ToDoRequestDto request) {
-		Todo todo = findTodo(id);
-		User user = findUser(userInfo.getUsername());
-		checkCompareUser(todo.getUser(), user);
+		Todo todo = verifier.findTodo(id);
+		User user = verifier.findUser(userInfo.getUsername());
+		verifier.checkCompareUser(todo.getUser(), user);
 
 		todo.update(request);
 
@@ -95,9 +92,9 @@ public class TodoService {
 
 	@Transactional
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> completeTodo(Long id, User userInfo) {
-		Todo todo = findTodo(id);
-		User user = findUser(userInfo.getUsername());
-		checkCompareUser(todo.getUser(), user);
+		Todo todo = verifier.findTodo(id);
+		User user = verifier.findUser(userInfo.getUsername());
+		verifier.checkCompareUser(todo.getUser(), user);
 
 		todo.updateComplete(true);
 
@@ -107,28 +104,10 @@ public class TodoService {
 
 	@Transactional
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> deleteTodo(Long id, User user) {
-		Todo todo = findTodo(id);
-		checkCompareUser(todo.getUser(), user);
+		Todo todo = verifier.findTodo(id);
+		verifier.checkCompareUser(todo.getUser(), user);
 		todoRepository.delete(todo);
 
 		return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK, Message.DELETE_CARD, null));
-	}
-
-	private void checkCompareUser(User todoUser, User user) {
-		if (!user.getUsername().equals(todoUser.getUsername())) {
-			throw new IllegalArgumentException(Message.NOT_WRITER);
-		}
-	}
-
-	private Todo findTodo(Long id) {
-		return todoRepository.findById(id).orElseThrow(
-			() -> new IllegalArgumentException(Message.NOT_EXIST_CARD)
-		);
-	}
-
-	private User findUser(String username) {
-		return userRepository.findByUsername(username).orElseThrow(
-			() -> new IllegalArgumentException(Message.NOT_EXIST_USER)
-		);
 	}
 }
