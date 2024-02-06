@@ -25,8 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtUtil {
 	// Header KEY 값
 	public static final String AUTHORIZATION_HEADER = "Authorization";
-	// 사용자 권한 값의 KEY
-	public static final String AUTHORIZATION_KEY = "auth";
 	// Token 식별자
 	public static final String BEARER_PREFIX = "Bearer ";
 	// 토큰 만료시간
@@ -50,7 +48,6 @@ public class JwtUtil {
 		return BEARER_PREFIX +
 			Jwts.builder()
 				.setSubject(username)                                   // 사용자 식별자값(ID)
-				.claim(AUTHORIZATION_KEY, username)                    // 사용자 권한
 				.setExpiration(new Date(date.getTime() + TOKEN_TIME))   // 만료 시간
 				.setIssuedAt(date)                                      // 발급일
 				.signWith(key, signatureAlgorithm)                      // 암호화 알고리즘
