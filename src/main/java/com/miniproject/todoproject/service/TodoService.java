@@ -47,7 +47,7 @@ public class TodoService {
 
 	public ResponseEntity<ResponseDto<ToDoResponseDto>> createTodo(User userInfo, ToDoRequestDto request) {
 		User user = verifier.findUser(userInfo.getUsername());
-		Todo todo = new Todo(request.getTitle(), request.getContents(), user);
+		Todo todo = new Todo(request, user);
 		Todo savedTodo = todoRepository.save(todo);
 
 		return new ResponseEntity<>(
@@ -57,7 +57,7 @@ public class TodoService {
 
 	public ResponseEntity<ResponseDto<TodoCommentResponseDto>> readToDo(Long id) {
 		Todo todo = verifier.findTodo(id);
-		List<Comment> findCommentList = verifier.findAllComments(todo);
+		List<Comment> findCommentList = todo.getCommentList();
 
 		List<UserCommentDto> responseDtoList = findCommentList.stream()
 			.map(comment -> new UserCommentDto(comment.getContents(), comment.getUser().getUsername()))

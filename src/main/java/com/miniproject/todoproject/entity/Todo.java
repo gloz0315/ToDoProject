@@ -44,9 +44,9 @@ public class Todo extends TimeStamped {
 	@OneToMany(mappedBy = "todo", cascade = CascadeType.PERSIST, orphanRemoval = true)
 	private List<Comment> commentList = new ArrayList<>();
 
-	public Todo(String title, String contents, User user) {
-		this.title = title;
-		this.contents = contents;
+	public Todo(ToDoRequestDto request, User user) {
+		this.title = request.getTitle();
+		this.contents = request.getContents();
 		this.user = user;
 		this.complete = false;
 	}
