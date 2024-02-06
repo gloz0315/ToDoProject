@@ -34,9 +34,12 @@ public class Comment {
 	@JoinColumn(name = "todo_id", nullable = false)
 	private Todo todo;
 
-	public Comment(String contents, User user) {
+	public Comment(String contents, User user, Todo todo) {
 		this.contents = contents;
 		this.user = user;
+		this.todo = todo;
+
+		todo.addCommentList(this);
 	}
 
 	public void update(String comment) {

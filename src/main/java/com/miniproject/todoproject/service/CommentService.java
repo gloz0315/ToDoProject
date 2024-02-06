@@ -30,8 +30,7 @@ public class CommentService {
 		Todo todo = verifier.findTodo(id);
 		User user = verifier.findUser(userInfo.getUsername());
 
-		Comment comment = new Comment(requestDto.getContents(), user);
-		todo.addCommentList(comment);
+		Comment comment = new Comment(requestDto.getContents(), user, todo);
 		commentRepository.save(comment);
 
 		return new ResponseEntity<>(
