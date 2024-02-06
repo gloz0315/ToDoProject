@@ -26,8 +26,8 @@ public class Invalidate {
 		return alphaNumeric(password);
 	}
 
-	public static boolean duplicateUserName(Optional<User> userList) {
-		return userList.isPresent();
+	public static boolean duplicateUserName(Optional<User> user) {
+		return user.isPresent();
 	}
 
 	private static boolean lowerAlphaNumeric(String text) {

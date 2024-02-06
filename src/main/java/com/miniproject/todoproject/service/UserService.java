@@ -9,6 +9,7 @@ import com.miniproject.todoproject.dto.logindto.LoginRequestDto;
 import com.miniproject.todoproject.dto.logindto.LoginResponseDto;
 import com.miniproject.todoproject.dto.signupdto.SignupRequestDto;
 import com.miniproject.todoproject.entity.User;
+import com.miniproject.todoproject.invalidate.Invalidate;
 import com.miniproject.todoproject.invalidate.Verifier;
 import com.miniproject.todoproject.jwtUtil.JwtUtil;
 import com.miniproject.todoproject.message.Message;
@@ -32,9 +33,9 @@ public class UserService {
 		String username = request.getUsername();
 		String password = request.getPassword();
 
-		User user = verifier.verifyUser(username);
+		User user = verifier.findUser(username);
 
-		verifier.comparePassword(user.getPassword(), password);
+		comparePassword(user.getPassword(), password);
 
 		response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
 
@@ -45,13 +46,37 @@ public class UserService {
 		String username = requestDto.getUsername();
 		String password = requestDto.getPassword();
 
-		verifier.invalidateUsername(username);
-		verifier.invalidatePassword(password);
-		verifier.duplicateSName(username);
+		invalidateUsername(username);
+		invalidatePassword(password);
+		duplicateSName(username);
 
 		User user = new User(username, passwordEncoder.encode(password));
 		userRepository.save(user);
 
 		return ResponseEntity.ok(new LoginResponseDto(HttpStatus.OK, Message.SUCCESS_SIGNUP));
+	}
+
+	private void comparePassword(String repositoryPassword, String password) {
+		if (!passwordEncoder.matches(password, repositoryPassword)) {
+			throw new IllegalArgumentException(Message.NOT_MATCH_PASSWORD);
+		}
+	}
+
+	private void invalidateUsername(String username) {
+		if (!Invalidate.userLengthValidate(username)) {
+			throw new IllegalArgumentException(Message.INVALIDATE_USERNAME);
+		}
+	}
+
+	private void invalidatePassword(String password) {
+		if (!Invalidate.passwordLengthValidate(password)) {
+			throw new IllegalArgumentException(Message.INVALIDATE_PASSWORD);
+		}
+	}
+
+	private void duplicateSName(String username) {
+		if (Invalidate.duplicateUserName(userRepository.findByUsername(username))) {
+			throw new IllegalArgumentException(Message.DUPLICATE_USERNAME);
+		}
 	}
 }
