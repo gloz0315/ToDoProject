@@ -2,6 +2,7 @@ package com.miniproject.todoproject.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +36,7 @@ public class UserController {
 		content = @Content(schema = @Schema(implementation = LoginResponseDto.class)))
 	@PostMapping("/signup")
 	@ResponseBody
-	public ResponseEntity<LoginResponseDto> signup(@RequestBody SignupRequestDto request) {
+	public ResponseEntity<LoginResponseDto> signup(@Validated @RequestBody SignupRequestDto request) {
 		return userService.signup(request);
 	}
 

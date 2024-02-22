@@ -41,6 +41,14 @@ public class JwtUtil {
 		key = Keys.hmacShaKeyFor(bytes);
 	}
 
+	public String resolveToken(HttpServletRequest request) {
+		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+			return bearerToken.substring(7);
+		}
+		return null;
+	}
+
 	// 토큰 생성
 	public String createToken(String username) {
 		Date date = new Date();
